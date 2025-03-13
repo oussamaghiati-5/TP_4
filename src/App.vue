@@ -46,121 +46,119 @@ export default {
       sortOrder,
       filteredPieces,
       addToCart,
+      cart,
     };
   },
 };
 </script>
 
 <style scoped>
-@import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+@import url("https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css");
 
 body {
+  font-family: "Montserrat", sans-serif;
+  background-color: #f8f9fa;
+}
+
+.container {
   max-width: 1200px;
   margin: auto;
-  padding: 16px;
-  font-family: "Montserrat", sans-serif;
+  padding: 20px;
 }
 
 header {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-bottom: 16px;
-  padding: 8px;
   background-color: #7451eb;
-  text-align: center;
   color: white;
-}
-
-header img {
-  height: 60px;
-  margin-left: 1rem;
-}
-
-header h1 {
-  flex-grow: 1;
-}
-
-main {
-  display: flex;
-  flex-direction: row;
+  padding: 15px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
 }
 
 .filtres {
-  border-radius: 4px;
-  box-shadow: 0px 0px 4px gray;
-  margin: 8px;
-  padding: 8px;
-  min-width: 300px;
-  min-height: 400px;
-}
-
-.filtres h3 {
-  text-align: center;
+  background: white;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .fiches {
-  flex: 1;
-  margin: 8px;
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 20px;
 }
 
 .fiche {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border: 1px solid #ddd;
-  padding: 10px;
-  width: 100%;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  width: 18rem;
   background: white;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  text-align: center;
 }
 
 .fiche img {
-  max-width: 100px;
-  margin-right: 10px;
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
 }
 
-.fiche p {
-  margin-top: 4px;
-  margin-bottom: 4px;
+.panier {
+  background: white;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
 }
 </style>
 
 <template>
-  <body>
+  <div class="container">
     <header>
-      <h1>Les Bonnes Pièces</h1>
+      Les Bonnes Pièces
     </header>
-    <main>
-      <section class="filtres">
+
+    <div class="row mt-3">
+      <!-- Filters Section -->
+      <div class="col-md-3 filtres">
         <h3>Filtres</h3>
-        <input v-model="searchQuery" placeholder="Rechercher..." />
-        <select v-model="selectedCategory">
+        <input v-model="searchQuery" class="form-control mb-2" placeholder="Rechercher..." />
+        <select v-model="selectedCategory" class="form-select mb-2">
           <option value="">Toutes catégories</option>
           <option v-for="piece in piecesData" :key="piece.categorie" :value="piece.categorie">
             {{ piece.categorie }}
           </option>
         </select>
-        <button @click="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'">
+        <button @click="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'" class="btn btn-primary w-100">
           Trier par prix {{ sortOrder === "asc" ? "↑" : "↓" }}
         </button>
-      </section>
+      </div>
 
-      <section class="fiches">
-        <div v-for="piece in filteredPieces" :key="piece.id" class="fiche">
-          <img :src="piece.image" :alt="piece.nom" />
-          <div>
-            <p>{{ piece.nom }}</p>
-            <p>Prix: {{ piece.prix }}€</p>
-            <p v-if="piece.Disponible">En stock</p>
-            <p v-else>Rupture de stock</p>
-            <button @click="addToCart(piece)">Ajouter au panier</button>
+      <!-- Products Section -->
+      <div class="col-md-6 fiches d-flex flex-wrap justify-content-center">
+        <div v-for="piece in filteredPieces" :key="piece.id" class="fiche card">
+          <img :src="piece.image" :alt="piece.nom" class="card-img-top" />
+          <div class="card-body">
+            <h5 class="card-title">{{ piece.nom }}</h5>
+            <p class="card-text">Prix: {{ piece.prix }}€</p>
+            <p class="card-text" :class="{ 'text-success': piece.Disponible, 'text-danger': !piece.Disponible }">
+              {{ piece.Disponible ? "En stock" : "Rupture de stock" }}
+            </p>
+            <button @click="addToCart(piece)" class="btn btn-success w-100">Ajouter au panier</button>
           </div>
         </div>
-      </section>
-    </main>
-  </body>
+      </div>
+
+      <!-- Cart Section -->
+      <div class="col-md-3 panier">
+        <h3>Panier</h3>
+        <ul class="list-group">
+          <li v-for="item in cart" :key="item.id" class="list-group-item">
+            {{ item.nom }} - {{ item.prix }}€
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
 </template>
